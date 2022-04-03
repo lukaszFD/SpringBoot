@@ -1,4 +1,4 @@
-package pl.lukaszfd.restapi;
+package pl.lukasz.fd.restapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
