@@ -18,13 +18,8 @@ import java.util.List;
 @RequestMapping(path = "api/v1/DemoApp")
 public class DemoAppController
 {
-    private final DemoAppService _appService;
-
     @Autowired
-    public DemoAppController(DemoAppService appService)
-    {
-        _appService = appService;
-    }
+    private DemoAppService _appService;
 
     @GetMapping("/GetStudent")
     public List<Student> GetStudent()

@@ -1,16 +1,24 @@
 package pl.lukasz.fd.restapi.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.lukasz.fd.restapi.Model.Accounts;
+import pl.lukasz.fd.restapi.Service.GlobalRepositoryService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/GlobalRepository")
 public class GlobalRepositoryController
 {
-    @GetMapping("/hello")
-    public String hello()
+    @Autowired
+    private GlobalRepositoryService _globalRepositoryService;
+
+    @GetMapping("/GetAccount")
+    public List<Accounts> GetAccount()
     {
-        return "Hi Lukasz";
+        return _globalRepositoryService.GetAccount();
     }
 }
