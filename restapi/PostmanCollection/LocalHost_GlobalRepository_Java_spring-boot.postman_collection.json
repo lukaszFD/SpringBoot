@@ -31,7 +31,62 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "GetAccount",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/GlobalRepository/GetAccount?id=50",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"GlobalRepository",
+								"GetAccount"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 08 Apr 2022 13:48:17 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"name\": \"Konto_50\",\n        \"type\": \"U\",\n        \"systemId\": 50,\n        \"description\": \"Test\",\n        \"deleteDate\": null,\n        \"tofix\": null,\n        \"externalid\": \"02CCF8C6-A10D-4B46-86CD-37A040C02699\",\n        \"passwordExpires\": null,\n        \"creationDate\": \"2021-02-15T19:25:12.623\",\n        \"recAccountId\": 808,\n        \"countryId\": 52,\n        \"accountId\": 50,\n        \"serverId\": 50,\n        \"editDate\": \"2021-02-15T19:25:18.56\",\n        \"userId\": null\n    }\n]"
+				}
+			]
 		}
 	]
 }
