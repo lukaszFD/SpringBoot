@@ -4,41 +4,42 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Accounts", schema = "repository")
 @Data
 public class Accounts
 {
-    @Column(name ="ExternalId")
-    private String ExternalId;
+    @Column(name ="externalid")
+    private String Externalid;
     @Id
-    @Column(name ="AccountId")
+    @Column(name ="accountid")
     private Long AccountId;
-    @Column(name ="CountryId")
-    private String CountryId;
-    @Column(name ="UserId")
-    private String UserId;
-    @Column(name ="SystemId")
-    private String SystemId;
-    @Column(name ="ServerId")
-    private String ServerId;
-    @Column(name ="Name")
+    @Column(name ="countryid")
+    private Long CountryId;
+    @Column(name ="userid")
+    private Long UserId;
+    @Column(name ="systemid")
+    private Long SystemId;
+    @Column(name ="serverid")
+    private Long ServerId;
+    @Column(name ="name")
     private String Name;
-    @Column(name ="Description")
+    @Column(name ="description")
     private String Description;
-    @Column(name ="Type")
+    @Column(name ="type")
     private String Type;
-    @Column(name ="PasswordExpires")
-    private String PasswordExpires;
-    @Column(name ="Tofix")
+    @Column(name ="passwordexpires")
+    private LocalDateTime PasswordExpires;
+    @Column(name ="tofix")
     private String Tofix;
-    @Column(name ="CreationDate")
-    private String CreationDate;
-    @Column(name ="EditDate")
-    private String EditDate;
-    @Column(name ="DeleteDate")
-    private String DeleteDate;
-    @Column(name ="RecAccountId")
-    private String RecAccountId;
+    @Column(name ="creationdate")
+    private LocalDateTime CreationDate;
+    @Column(name ="editdate")
+    private LocalDateTime EditDate;
+    @Column(name ="deletedate")
+    private LocalDateTime DeleteDate;
+    @Column(name ="recaccountid")
+    private Long RecAccountId;
 }

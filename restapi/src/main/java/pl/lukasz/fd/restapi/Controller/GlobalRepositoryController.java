@@ -1,9 +1,7 @@
 package pl.lukasz.fd.restapi.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.lukasz.fd.restapi.Model.Accounts;
 import pl.lukasz.fd.restapi.Service.GlobalRepositoryService;
 
@@ -17,8 +15,9 @@ public class GlobalRepositoryController
     private GlobalRepositoryService _globalRepositoryService;
 
     @GetMapping("/GetAccount")
-    public List<Accounts> GetAccount()
+    @ResponseBody
+    public List<Accounts> GetAccount(@RequestParam(name = "id") Long id)
     {
-        return _globalRepositoryService.GetAccount();
+        return _globalRepositoryService.GetAccount(id);
     }
 }
