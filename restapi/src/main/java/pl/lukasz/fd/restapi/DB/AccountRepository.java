@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 import pl.lukasz.fd.restapi.Model.Accounts;
 
 @Repository
-public interface IGlobalRepository extends JpaRepository <Accounts,Long> { }
+public interface AccountRepository extends JpaRepository<Accounts, Integer> {
+
+}

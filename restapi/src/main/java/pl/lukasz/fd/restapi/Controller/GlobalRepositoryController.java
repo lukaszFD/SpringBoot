@@ -16,7 +16,7 @@ public class GlobalRepositoryController
 
     @GetMapping("/GetAccount")
     @ResponseBody
-    public List<Accounts> GetAccount(@RequestParam(name = "id") Long id)
+    public List<Accounts> GetAccount(@RequestParam(name = "id") Integer id)
     {
         return _globalRepositoryService.GetAccount(id);
     }
