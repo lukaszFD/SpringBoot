@@ -60,6 +60,7 @@ public class AccountRestControllerIntegrationTest
                         .get("/api/v1/GlobalRepository/GetAccount?id=1")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
-                        .andDo(print());
+                        .andDo(print())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$[0].externalid").value(acc1.getExternalid()));
     }
 }
