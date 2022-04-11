@@ -1,6 +1,7 @@
 package pl.lukasz.fd.restapi.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.lukasz.fd.restapi.DB.AccountRepository;
 import pl.lukasz.fd.restapi.Model.Accounts;

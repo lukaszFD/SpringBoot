@@ -1,6 +1,7 @@
 package pl.lukasz.fd.restapi.Model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -8,8 +9,41 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Accounts", schema = "repository")
 @Data
+@NoArgsConstructor
 public class Accounts
 {
+    public Accounts(String externalid,
+                    Integer accountId,
+                    Long countryId,
+                    Long userId,
+                    Long systemId,
+                    Long serverId,
+                    String name,
+                    String description,
+                    String type,
+                    LocalDateTime passwordExpires,
+                    String tofix,
+                    LocalDateTime creationDate,
+                    LocalDateTime editDate,
+                    LocalDateTime deleteDate,
+                    Long recAccountId) {
+        Externalid = externalid;
+        AccountId = accountId;
+        CountryId = countryId;
+        UserId = userId;
+        SystemId = systemId;
+        ServerId = serverId;
+        Name = name;
+        Description = description;
+        Type = type;
+        PasswordExpires = passwordExpires;
+        Tofix = tofix;
+        CreationDate = creationDate;
+        EditDate = editDate;
+        DeleteDate = deleteDate;
+        RecAccountId = recAccountId;
+    }
+
     @Column(name ="externalid")
     private String Externalid;
     @Id
@@ -70,10 +104,7 @@ public class Accounts
         return UserId;
     }
 
-    public void setUserId(Long userId) {
-        UserId = userId;
-    }
-
+    public void setUserId(Long userId) { UserId = userId;}
     public Long getSystemId() {
         return SystemId;
     }
