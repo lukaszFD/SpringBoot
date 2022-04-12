@@ -1,0 +1,60 @@
+Hibernate:
+    select
+        accounts0_.accountid as accounti1_0_,
+        accounts0_.countryid as countryi2_0_,
+        accounts0_.creationdate as creation3_0_,
+        accounts0_.deletedate as deleteda4_0_,
+        accounts0_.description as descript5_0_,
+        accounts0_.editdate as editdate6_0_,
+        accounts0_.externalid as external7_0_,
+        accounts0_.name as name8_0_,
+        accounts0_.passwordexpires as password9_0_,
+        accounts0_.recaccountid as recacco10_0_,
+        accounts0_.serverid as serveri11_0_,
+        accounts0_.systemid as systemi12_0_,
+        accounts0_.tofix as tofix13_0_,
+        accounts0_.type as type14_0_,
+        accounts0_.userid as userid15_0_
+    from
+        repository.accounts accounts0_
+    where
+        accounts0_.accountid in (
+            ?
+        )
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/v1/GlobalRepository/GetAccount
+       Parameters = {id=[1]}
+          Headers = [Accept:"application/json"]
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = pl.lukasz.fd.restapi.Controller.GlobalRepositoryController
+           Method = pl.lukasz.fd.restapi.Controller.GlobalRepositoryController#GetAccount(Integer)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"name":"Konto_1","type":"U","systemId":1,"externalid":"190890EA-0138-4EA3-9D3F-94C5108618A0","accountId":1,"description":null,"countryId":141,"serverId":1,"deleteDate":null,"passwordExpires":null,"tofix":null,"creationDate":"2021-02-15T19:25:12.62","userId":2,"editDate":null,"recAccountId":null}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
