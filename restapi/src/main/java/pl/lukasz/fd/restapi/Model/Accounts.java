@@ -1,49 +1,17 @@
 package pl.lukasz.fd.restapi.Model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Accounts", schema = "repository")
-@Data
-@NoArgsConstructor
+@Setter
+@Getter
+@ToString
 public class Accounts
 {
-    public Accounts(String externalid,
-                    Integer accountId,
-                    Long countryId,
-                    Long userId,
-                    Long systemId,
-                    Long serverId,
-                    String name,
-                    String description,
-                    String type,
-                    LocalDateTime passwordExpires,
-                    String tofix,
-                    LocalDateTime creationDate,
-                    LocalDateTime editDate,
-                    LocalDateTime deleteDate,
-                    Long recAccountId) {
-        Externalid = externalid;
-        AccountId = accountId;
-        CountryId = countryId;
-        UserId = userId;
-        SystemId = systemId;
-        ServerId = serverId;
-        Name = name;
-        Description = description;
-        Type = type;
-        PasswordExpires = passwordExpires;
-        Tofix = tofix;
-        CreationDate = creationDate;
-        EditDate = editDate;
-        DeleteDate = deleteDate;
-        RecAccountId = recAccountId;
-    }
-
     @Column(name ="externalid")
     private String Externalid;
     @Id
@@ -75,121 +43,4 @@ public class Accounts
     private LocalDateTime DeleteDate;
     @Column(name ="recaccountid")
     private Long RecAccountId;
-
-    public String getExternalid() {
-        return Externalid;
-    }
-
-    public void setExternalid(String externalid) {
-        Externalid = externalid;
-    }
-
-    public Integer getAccountId() {
-        return AccountId;
-    }
-
-    public void setAccountId(Integer accountId) {
-        AccountId = accountId;
-    }
-
-    public Long getCountryId() {
-        return CountryId;
-    }
-
-    public void setCountryId(Long countryId) {
-        CountryId = countryId;
-    }
-
-    public Long getUserId() {
-        return UserId;
-    }
-
-    public void setUserId(Long userId) { UserId = userId;}
-    public Long getSystemId() {
-        return SystemId;
-    }
-
-    public void setSystemId(Long systemId) {
-        SystemId = systemId;
-    }
-
-    public Long getServerId() {
-        return ServerId;
-    }
-
-    public void setServerId(Long serverId) {
-        ServerId = serverId;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public String getDescription() {
-        return Description;
-    }
-
-    public void setDescription(String description) {
-        Description = description;
-    }
-
-    public String getType() {
-        return Type;
-    }
-
-    public void setType(String type) {
-        Type = type;
-    }
-
-    public LocalDateTime getPasswordExpires() {
-        return PasswordExpires;
-    }
-
-    public void setPasswordExpires(LocalDateTime passwordExpires) {
-        PasswordExpires = passwordExpires;
-    }
-
-    public String getTofix() {
-        return Tofix;
-    }
-
-    public void setTofix(String tofix) {
-        Tofix = tofix;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return CreationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        CreationDate = creationDate;
-    }
-
-    public LocalDateTime getEditDate() {
-        return EditDate;
-    }
-
-    public void setEditDate(LocalDateTime editDate) {
-        EditDate = editDate;
-    }
-
-    public LocalDateTime getDeleteDate() {
-        return DeleteDate;
-    }
-
-    public void setDeleteDate(LocalDateTime deleteDate) {
-        DeleteDate = deleteDate;
-    }
-
-    public Long getRecAccountId() {
-        return RecAccountId;
-    }
-
-    public void setRecAccountId(Long recAccountId) {
-        RecAccountId = recAccountId;
-    }
 }
