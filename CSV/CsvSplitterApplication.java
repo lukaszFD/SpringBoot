@@ -1,16 +1,11 @@
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.nio.file.*;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class CsvSplitterApplication implements CommandLineRunner {
@@ -27,70 +22,56 @@ public class CsvSplitterApplication implements CommandLineRunner {
         }
 
         String inputFilePath = args[0];
-        File inputFile = new File(inputFilePath);
+        Path inputPath = Paths.get(inputFilePath);
 
-        if (!inputFile.exists()) {
+        if (!Files.exists(inputPath)) {
             System.err.println("Input file does not exist.");
             System.exit(1);
         }
 
-        splitCsvFile(inputFile);
+        splitCsvFile(inputPath);
     }
 
-    private void splitCsvFile(File inputFile) throws IOException {
-        try (Reader reader = new FileReader(inputFile);
-             CSVPrinter printer = createCsvPrinter(inputFile)) {
+    private void splitCsvFile(Path inputPath) throws Exception {
+        List<String> lines = Files.readAllLines(inputPath);
+        String header = lines.get(0);
 
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
+        int batchSize = calculateBatchSize(lines);
 
-            List<CSVRecord> recordList = new ArrayList<>();
-            int batchSize = calculateBatchSize(records);
+        try (Stream<String> stream = Files.lines(inputPath)) {
+            List<String> records = stream.skip(1).collect(Collectors.toList());
 
             int fileCounter = 1;
-            int totalRowCount = 0;
+            int totalRowCount = records.size();
 
-            for (CSVRecord record : records) {
-                recordList.add(record);
-                totalRowCount++;
-
-                if (recordList.size() >= batchSize) {
-                    writeBatchToFile(recordList, printer, inputFile.getName(), fileCounter++);
-                    recordList.clear();
-                }
-            }
-
-            if (!recordList.isEmpty()) {
-                writeBatchToFile(recordList, printer, inputFile.getName(), fileCounter);
+            for (int i = 0; i < records.size(); i += batchSize) {
+                List<String> batch = records.subList(i, Math.min(i + batchSize, records.size()));
+                writeBatchToFile(header, inputPath, fileCounter++, batch);
             }
 
             System.out.println("File split completed. Total rows: " + totalRowCount);
         }
     }
 
-    private int calculateBatchSize(Iterable<CSVRecord> records) {
-        int totalRows = 0;
-        for (CSVRecord record : records) {
-            totalRows++;
-        }
-
-        return totalRows < 1000000 ? 4 : 8;
+    private int calculateBatchSize(List<String> lines) {
+        return lines.size() < 1000000 ? 4 : 8;
     }
 
-    private CSVPrinter createCsvPrinter(File inputFile) throws IOException {
-        Path outputPath = Paths.get(inputFile.getParent());
-        String outputFileName = inputFile.getName().replace(".csv", ".%d.csv");
-        File outputFile = new File(outputPath.toFile(), String.format(outputFileName, 1));
+    private void writeBatchToFile(String header, Path inputPath, int fileCounter, List<String> records) throws Exception {
+        String fileName = inputPath.getFileName().toString().replace(".csv", "." + fileCounter + ".csv");
+        Path outputPath = inputPath.resolveSibling(fileName);
 
-        return new CSVPrinter(new FileWriter(outputFile), CSVFormat.DEFAULT.withHeader());
-    }
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
+            writer.write(header + "\n");
+            records.forEach(record -> {
+                try {
+                    writer.write(record + "\n");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
-    private void writeBatchToFile(List<CSVRecord> records, CSVPrinter printer, String baseFileName, int fileCounter) throws IOException {
-        String fileName = baseFileName.replace(".csv", "." + fileCounter + ".csv");
-
-        for (CSVRecord record : records) {
-            printer.printRecord(record.toMap());
+            System.out.println("File created: " + outputPath.toString());
         }
-
-        System.out.println("File created: " + fileName);
     }
 }
