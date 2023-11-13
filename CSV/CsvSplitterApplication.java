@@ -19,28 +19,23 @@ public class CsvSplitterApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (args.length == 0) {
-            System.out.println("Podaj plik CSV jako argument.");
+            System.out.println("Podaj ścieżkę do pliku CSV jako argument.");
             return;
         }
 
-        File inputFile = new File(args[0]);
-        if (!inputFile.exists() || !inputFile.isFile()) {
-            System.out.println("Podany plik nie istnieje lub nie jest plikiem.");
-            return;
-        }
-
-        splitCsvFile(inputFile);
+        String inputFilePath = args[0];
+        splitCsvFile(inputFilePath);
     }
 
-    private void splitCsvFile(File inputFile) {
-        try (BufferedReader reader = Files.newBufferedReader(inputFile.toPath())) {
+    private void splitCsvFile(String inputFilePath) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(inputFilePath))) {
             List<String> header = readHeader(reader);
             List<List<String>> rows = readRows(reader);
 
             int chunkSize = rows.size() > 1000000 ? 8 : 4;
             List<List<List<String>>> chunks = chunkList(rows, chunkSize);
 
-            saveChunks(inputFile, header, chunks);
+            saveChunks(inputFilePath, header, chunks);
 
             System.out.println("Pliki zostały pomyślnie podzielone.");
         } catch (IOException e) {
@@ -64,6 +59,7 @@ public class CsvSplitterApplication implements CommandLineRunner {
     }
 
     private List<String> parseCsvLine(String line) {
+        // Prosta implementacja parsowania linii CSV (możesz dostosować do konkretnych wymagań)
         String[] tokens = line.split(",");
         List<String> values = new ArrayList<>();
         for (String token : tokens) {
@@ -81,14 +77,15 @@ public class CsvSplitterApplication implements CommandLineRunner {
         return chunks;
     }
 
-    private void saveChunks(File inputFile, List<String> header, List<List<List<String>>> chunks) {
-        String directoryPath = inputFile.getParent();
+    private void saveChunks(String inputFilePath, List<String> header, List<List<List<String>>> chunks) {
+        String directoryPath = new File(inputFilePath).getParent();
+        String fileNameWithoutExtension = new File(inputFilePath).getName().replace(".csv", "");
 
         for (int i = 0; i < chunks.size(); i++) {
-            String fileName = String.format("%s.%d.csv", inputFile.getName(), i + 1);
-            Path filePath = Paths.get(directoryPath, fileName);
+            String fileName = String.format("%s.%d.csv", fileNameWithoutExtension, i + 1);
+            String filePath = new File(directoryPath, fileName).getPath();
 
-            try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath))) {
                 writeCsvLine(writer, header);
                 for (List<String> row : chunks.get(i)) {
                     writeCsvLine(writer, row);
