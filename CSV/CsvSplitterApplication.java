@@ -3,6 +3,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,42 +37,46 @@ public class CsvSplitterApplication implements CommandLineRunner {
         List<String> lines = Files.readAllLines(inputPath);
         String header = lines.get(0);
 
-        int batchSize = calculateBatchSize(lines);
+        List<String> records = lines.stream().skip(1).collect(Collectors.toList());
 
-        try (Stream<String> stream = Files.lines(inputPath)) {
-            List<String> records = stream.skip(1).collect(Collectors.toList());
+        int batchSize = calculateBatchSize(records.size());
 
-            int fileCounter = 1;
-            int totalRowCount = records.size();
+        List<List<String>> batches = partition(records, batchSize);
 
-            for (int i = 0; i < records.size(); i += batchSize) {
-                List<String> batch = records.subList(i, Math.min(i + batchSize, records.size()));
-                writeBatchToFile(header, inputPath, fileCounter++, batch);
-            }
+        int fileCounter = 1;
+        int totalRowCount = 0;
 
-            System.out.println("File split completed. Total rows: " + totalRowCount);
+        for (List<String> batch : batches) {
+            writeBatchToFile(batch, header, inputPath, fileCounter++);
+            totalRowCount += batch.size();
         }
+
+        System.out.println("File split completed. Total rows: " + totalRowCount);
     }
 
-    private int calculateBatchSize(List<String> lines) {
-        return lines.size() < 1000000 ? 4 : 8;
+    private int calculateBatchSize(int totalRows) {
+        return totalRows < 1000000 ? 4 : 8;
     }
 
-    private void writeBatchToFile(String header, Path inputPath, int fileCounter, List<String> records) throws Exception {
+    private List<List<String>> partition(List<String> records, int batchSize) {
+        List<List<String>> batches = new ArrayList<>();
+        for (int i = 0; i < records.size(); i += batchSize) {
+            int end = Math.min(i + batchSize, records.size());
+            batches.add(records.subList(i, end));
+        }
+        return batches;
+    }
+
+    private void writeBatchToFile(List<String> records, String header, Path inputPath, int fileCounter) throws Exception {
         String fileName = inputPath.getFileName().toString().replace(".csv", "." + fileCounter + ".csv");
-        Path outputPath = inputPath.resolveSibling(fileName);
+        Path outputPath = inputPath.getParent().resolve(fileName);
 
-        try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
-            writer.write(header + "\n");
-            records.forEach(record -> {
-                try {
-                    writer.write(record + "\n");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+        List<String> outputLines = new ArrayList<>();
+        outputLines.add(header);
+        outputLines.addAll(records);
 
-            System.out.println("File created: " + outputPath.toString());
-        }
+        Files.write(outputPath, outputLines, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+
+        System.out.println("File created: " + fileName);
     }
 }
