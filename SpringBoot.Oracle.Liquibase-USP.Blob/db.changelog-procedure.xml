@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.7.xsd">
+
+    <changeSet id="create-procedure" author="yourname">
+        <sql>
+            <![CDATA[
+                CREATE OR REPLACE PROCEDURE PI_DEV.P_DODAJ_BLOB (p_id IN NUMBER, p_blob IN BLOB) AS
+                BEGIN
+                    -- Your procedure logic here
+                    NULL;
+                END P_DODAJ_BLOB;
+            ]]>
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
