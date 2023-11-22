@@ -1,0 +1,37 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.7.xsd">
+
+    <!-- ChangeSet to create the students table -->
+    <changeSet id="create-table-students" author="yourname">
+        <createTable tableName="students">
+            <column name="id" type="NUMBER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR2(255)"/>
+            <!-- Add other columns as needed -->
+        </createTable>
+    </changeSet>
+
+    <!-- ChangeSet to insert initial data into the students table -->
+    <changeSet id="insert-initial-data" author="yourname">
+        <insert tableName="students">
+            <column name="id" value="1"/>
+            <column name="name" value="John Doe"/>
+        </insert>
+        <insert tableName="students">
+            <column name="id" value="2"/>
+            <column name="name" value="Jane Smith"/>
+        </insert>
+    </changeSet>
+
+    <!-- ChangeSet to add an index to the students table -->
+    <changeSet id="add-index" author="yourname">
+        <createIndex indexName="idx_students_name" tableName="students">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
