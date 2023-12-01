@@ -14,18 +14,15 @@ public class JsonToCsvConverter {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(new File(jsonFilePath));
 
-            // Extract CSV file name from JSON file
-            String csvFileName = getFileNameWithoutExtension(jsonFilePath);
-
             // OpenCSV writer for CSV output
-            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFileName + ".csv"))) {
+            try (CSVWriter writer = new CSVWriter(new FileWriter(getCsvFilePath(jsonFilePath)))) {
                 // Write header
                 writeHeaders(jsonNode, writer);
 
                 // Write data
                 writeData(jsonNode, writer);
 
-                System.out.println("Conversion successful. Check '" + csvFileName + ".csv'.");
+                System.out.println("Conversion successful. Check '" + getCsvFilePath(jsonFilePath) + "'.");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Conversion failed.");
@@ -62,16 +59,12 @@ public class JsonToCsvConverter {
         }
     }
 
-    private static String getFileNameWithoutExtension(String filePath) {
-        File file = new File(filePath);
-        String fileName = file.getName();
-        int lastDotIndex = fileName.lastIndexOf(".");
-        return lastDotIndex != -1 ? fileName.substring(0, lastDotIndex) : fileName;
-    }
-
-    public static void main(String[] args) {
-        // Replace with your JSON file path
-        String jsonFilePath = "path/to/your/file.json";
-        convertJsonToCsv(jsonFilePath);
+    private static String getCsvFilePath(String jsonFilePath) {
+        File jsonFile = new File(jsonFilePath);
+        String parentDirectory = jsonFile.getParent();
+        String jsonFileName = jsonFile.getName();
+        int lastDotIndex = jsonFileName.lastIndexOf(".");
+        String baseName = lastDotIndex != -1 ? jsonFileName.substring(0, lastDotIndex) : jsonFileName;
+        return parentDirectory + File.separator + baseName + ".csv";
     }
 }
