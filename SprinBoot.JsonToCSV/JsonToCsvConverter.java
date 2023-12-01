@@ -1,43 +1,42 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
-@RestController
-public class ConverterController {
+public class JsonToCsvConverter {
 
-    @PostMapping("/convert")
-    public String convertJsonToCsv(@RequestBody String jsonString) {
+    public static void convertJsonToCsv(String jsonFilePath) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(jsonString);
+            JsonNode jsonNode = objectMapper.readTree(new File(jsonFilePath));
+
+            // Extract CSV file name from JSON file
+            String csvFileName = getFileNameWithoutExtension(jsonFilePath);
 
             // OpenCSV writer for CSV output
-            try (CSVWriter writer = new CSVWriter(new FileWriter("output.csv"))) {
+            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFileName + ".csv"))) {
                 // Write header
                 writeHeaders(jsonNode, writer);
 
                 // Write data
                 writeData(jsonNode, writer);
 
-                return "Conversion successful. Check 'output.csv'.";
+                System.out.println("Conversion successful. Check '" + csvFileName + ".csv'.");
             } catch (IOException e) {
                 e.printStackTrace();
-                return "Conversion failed.";
+                System.out.println("Conversion failed.");
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return "Invalid JSON format.";
+            System.out.println("Invalid JSON file.");
         }
     }
 
-    private void writeHeaders(JsonNode jsonNode, CSVWriter writer) {
+    private static void writeHeaders(JsonNode jsonNode, CSVWriter writer) {
         Iterator<String> fieldNames = jsonNode.fieldNames();
         String[] headers = new String[jsonNode.size()];
         int index = 0;
@@ -49,7 +48,7 @@ public class ConverterController {
         writer.writeNext(headers);
     }
 
-    private void writeData(JsonNode jsonNode, CSVWriter writer) {
+    private static void writeData(JsonNode jsonNode, CSVWriter writer) {
         for (JsonNode record : jsonNode) {
             Iterator<JsonNode> elements = record.elements();
             String[] rowData = new String[record.size()];
@@ -61,5 +60,18 @@ public class ConverterController {
 
             writer.writeNext(rowData);
         }
+    }
+
+    private static String getFileNameWithoutExtension(String filePath) {
+        File file = new File(filePath);
+        String fileName = file.getName();
+        int lastDotIndex = fileName.lastIndexOf(".");
+        return lastDotIndex != -1 ? fileName.substring(0, lastDotIndex) : fileName;
+    }
+
+    public static void main(String[] args) {
+        // Replace with your JSON file path
+        String jsonFilePath = "path/to/your/file.json";
+        convertJsonToCsv(jsonFilePath);
     }
 }
