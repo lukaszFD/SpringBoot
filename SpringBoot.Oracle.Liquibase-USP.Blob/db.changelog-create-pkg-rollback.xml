@@ -1,0 +1,37 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="2" author="your_name">
+        <sqlFile path="classpath:/liquibase/packages_triggers/my_package.sql" relativeToChangelogFile="true"/>
+        
+        <!-- Rollback definition in case of compilation errors -->
+        <rollback>
+            <sql>
+                <![CDATA[
+                    DECLARE
+                        l_errors NUMBER;
+                        l_error_message VARCHAR2(4000);
+                    BEGIN
+                        EXECUTE IMMEDIATE 'CREATE OR REPLACE PACKAGE BODY MY_PACKAGE AS ...';
+                        EXCEPTION
+                            WHEN OTHERS THEN
+                                l_errors := SQLCODE;
+                                l_error_message := SQLERRM;
+                                
+                                IF l_errors = -24344 THEN -- ORA-24344: success with compilation error
+                                    EXECUTE IMMEDIATE 'DROP PACKAGE MY_PACKAGE';
+                                    DBMS_OUTPUT.PUT_LINE('Compilation error: ' || l_error_message);
+                                ELSE
+                                    RAISE;
+                                END IF;
+                    END;
+                ]]>
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- ... other changeSets ... -->
+
+</databaseChangeLog>
