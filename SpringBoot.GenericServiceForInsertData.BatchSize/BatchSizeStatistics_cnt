@@ -1,0 +1,20 @@
+private BatchSizeStatistics determineOptimalBatchSize(String tableName) {
+    // Pobierz dane statystyczne dla danej tabeli
+    List<BatchSizeStatistics> tableStatistics = getStatisticsForTable(tableName);
+
+    // Jeśli brak danych statystycznych, zwróć null
+    if (tableStatistics.isEmpty()) {
+        return null;
+    }
+
+    // Posortuj dane statystyczne uwzględniając czas wykonania, rozmiar wsadu, liczba wątków i ilość danych
+    tableStatistics.sort(Comparator
+            .comparingLong(stat -> stat.getExecutionTime().toMillis())
+            .thenComparingInt(BatchSizeStatistics::getBatchSize)
+            .thenComparingInt(BatchSizeStatistics::getNumberOfThreads)
+            .thenComparingInt(BatchSizeStatistics::getDataSize)
+            .reversed());
+
+    // Zwróć ostatni wpis (najlepszy czas wykonania)
+    return tableStatistics.get(0);
+}
