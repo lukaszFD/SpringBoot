@@ -1,6 +1,10 @@
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,23 +52,29 @@ public class ExcelReader {
                 int columnIndex = cell.getColumnIndex();
                 String header = headers.get(columnIndex);
 
-                Field field = clazz.getDeclaredField(header);
-                field.setAccessible(true);
+                Field[] fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    if (field.isAnnotationPresent(Column.class) &&
+                            field.getAnnotation(Column.class).name().equals(header)) {
+                        field.setAccessible(true);
 
-                if (field.getType().equals(String.class)) {
-                    field.set(obj, cell.getStringCellValue());
-                } else if (field.getType().equals(int.class)) {
-                    field.set(obj, (int) cell.getNumericCellValue());
-                } else if (field.getType().equals(double.class)) {
-                    field.set(obj, cell.getNumericCellValue());
-                } else if (field.getType().equals(Date.class)) {
-                    field.set(obj, cell.getDateCellValue());
+                        if (field.getType().equals(String.class)) {
+                            field.set(obj, cell.getStringCellValue());
+                        } else if (field.getType().equals(int.class)) {
+                            field.set(obj, (int) cell.getNumericCellValue());
+                        } else if (field.getType().equals(double.class)) {
+                            field.set(obj, cell.getNumericCellValue());
+                        } else if (field.getType().equals(Date.class)) {
+                            field.set(obj, cell.getDateCellValue());
+                        }
+                        // Dodaj obsługę innych typów pól według potrzeb
+
+                        field.setAccessible(false);
+                        break;
+                    }
                 }
-                // Dodaj obsługę innych typów pól według potrzeb
-
-                field.setAccessible(false);
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Błąd podczas mapowania wiersza na obiekt", e);
         }
         return obj;
