@@ -12,7 +12,7 @@ public class CsvReaderService {
     public <T> List<T> readCsvFile(File file, Class<T> clazz) {
         try (FileReader reader = new FileReader(file)) {
             MappingStrategy<T> mappingStrategy = createMappingStrategy(clazz);
-            
+
             return new CsvToBeanBuilder<T>(reader)
                     .withMappingStrategy(mappingStrategy)
                     .build()
@@ -24,17 +24,14 @@ public class CsvReaderService {
     }
 
     private <T> MappingStrategy<T> createMappingStrategy(Class<T> clazz) {
-        HeaderColumnNameMappingStrategy<T> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
-        mappingStrategy.setType(clazz);
-
-        // Jeśli klasa encji posiada adnotację @CsvBindByName, użyj strategii opartej na nazwach nagłówków
         if (clazz.isAnnotationPresent(com.opencsv.bean.CsvBindByName.class)) {
-            mappingStrategy.setColumnMapping(new String[]{"id", "name", "otherColumn", "..."});
+            HeaderColumnNameMappingStrategy<T> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
+            mappingStrategy.setType(clazz);
+            mappingStrategy.setColumnOrderOnWrite(new MappingStrategy.ColumnPositionMappingStrategy());
+            return mappingStrategy;
         } else {
             // Jeśli brak adnotacji, użyj strategii opartej na kolejności
-            mappingStrategy.setColumnOrderOnWrite(new MappingStrategy.ColumnPositionMappingStrategy());
+            return new MappingStrategy.ColumnPositionMappingStrategy();
         }
-
-        return mappingStrategy;
     }
 }
