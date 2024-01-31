@@ -27,11 +27,10 @@ public class CsvReaderService {
         if (clazz.isAnnotationPresent(com.opencsv.bean.CsvBindByName.class)) {
             HeaderColumnNameMappingStrategy<T> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
             mappingStrategy.setType(clazz);
-            mappingStrategy.setColumnOrderOnWrite(new MappingStrategy.ColumnPositionMappingStrategy());
             return mappingStrategy;
         } else {
             // Jeśli brak adnotacji, użyj strategii opartej na kolejności
-            return new MappingStrategy.ColumnPositionMappingStrategy();
+            return new ColumnPositionMappingStrategy<>();
         }
     }
 }
