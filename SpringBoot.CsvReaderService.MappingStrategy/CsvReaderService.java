@@ -2,11 +2,9 @@ import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class CsvReaderService {
@@ -14,8 +12,9 @@ public class CsvReaderService {
         try (FileReader reader = new FileReader(file)) {
             MappingStrategy<T> mappingStrategy = createMappingStrategy(clazz);
 
-            return new CsvToBeanBuilder<T>(isr)
+            return new CsvToBeanBuilder<T>(reader)
                     .withMappingStrategy(mappingStrategy)
+                    .withExceptionHandler(new CustomExceptionHandler<>(clazz))
                     .build()
                     .parse();
         } catch (IOException | CsvException e) {
@@ -48,4 +47,3 @@ public class CsvReaderService {
         return false;
     }
 }
-
