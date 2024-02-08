@@ -1,0 +1,26 @@
+1. Download Liquibase CLI:
+Download the latest version of Liquibase CLI from the official website: https://www.liquibase.org/download
+
+2. Prepare the configuration file:
+Create a configuration file for Liquibase, for example, liquibase.properties. In this file, you can define the database connection details, the location of migration files, etc. An example configuration file may look like this:
+
+properties
+
+driver: oracle.jdbc.OracleDriver
+url: jdbc:oracle:thin:@//localhost:1521/your_database
+username: yourUsername
+password: yourPassword
+changeLogFile: classpath:db/changelog/db.changelog-master.xml
+
+Make sure that the path to changeLogFile points to the correct changelog file with migrations.
+
+3. Run Liquibase CLI:
+Open a terminal and navigate to the directory where the liquibase.jar file and your configuration file are located. Then, run the following command to apply migrations:
+
+bash
+
+java -jar liquibase.jar --defaultsFile=liquibase.properties update
+
+Where liquibase.jar is the JAR file downloaded from Liquibase, and liquibase.properties is the name of your configuration file.
+
+This command will apply migrations to your Oracle database.
