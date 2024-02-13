@@ -1,17 +1,13 @@
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.MappingStrategy;
-import com.opencsv.bean.exceptions.CsvException;
-import com.opencsv.bean.strategy.ColumnPositionMappingStrategy;
-import org.springframework.stereotype.Service;
+import com.opencsv.CSVReader;
+import com.opencsv.bean.*;
+import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.regex.Pattern;
 
-@Service
 public class CsvReaderService {
     public <T> List<T> readCsvFile(File file, Class<T> clazz) {
         try (FileReader reader = new FileReader(file)) {
@@ -44,7 +40,7 @@ public class CsvReaderService {
     private boolean shouldUseRFC4180MappingStrategy(File file) {
         try (FileReader fileReader = new FileReader(file)) {
             char separator = detectSeparator(fileReader);
-            boolean containsQuotes = detectQuotes(fileReader);
+            boolean containsQuotes = containsQuotes(file);
             return separator == ',' && containsQuotes;
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,16 +50,24 @@ public class CsvReaderService {
 
     private char detectSeparator(FileReader fileReader) throws IOException {
         char separator = ',';
-        String firstLine = new CSVReaderBuilder(fileReader).readNext()[0];
-        if (Pattern.compile("\\t").matcher(firstLine).find()) {
+        String firstLine = new CSVReader(fileReader).readNext()[0];
+        if (firstLine.contains("\t")) {
             separator = '\t';
         }
         return separator;
     }
 
-    private boolean detectQuotes(FileReader fileReader) throws IOException {
-        String firstLine = new CSVReaderBuilder(fileReader).readNext()[0];
-        return firstLine.contains("\"");
+    private boolean containsQuotes(File file) {
+        try (CSVReader csvReader = new CSVReader(new FileReader(file))) {
+            String[] firstLine = csvReader.readNext();
+            if (firstLine != null && firstLine.length > 0) {
+                String firstColumn = firstLine[0];
+                return firstColumn.contains("\"");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private <T> boolean hasCsvBindByNameFields(Class<T> clazz) {
