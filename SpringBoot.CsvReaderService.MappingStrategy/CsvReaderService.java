@@ -1,5 +1,8 @@
-import com.opencsv.bean.*;
-import com.opencsv.exceptions.CsvException;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.MappingStrategy;
+import com.opencsv.bean.exceptions.CsvException;
+import com.opencsv.bean.strategy.ColumnPositionMappingStrategy;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +11,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Service
 public class CsvReaderService {
     public <T> List<T> readCsvFile(File file, Class<T> clazz) {
         try (FileReader reader = new FileReader(file)) {
@@ -15,7 +19,6 @@ public class CsvReaderService {
 
             return new CsvToBeanBuilder<T>(reader)
                     .withMappingStrategy(mappingStrategy)
-                    .withExceptionHandler(new CustomExceptionHandler<>(clazz))
                     .build()
                     .parse();
         } catch (IOException | CsvException e) {
@@ -27,38 +30,33 @@ public class CsvReaderService {
     private <T> MappingStrategy<T> createMappingStrategy(Class<T> clazz, File file) {
         if (shouldUseRFC4180MappingStrategy(file)) {
             return new RFC4180MappingStrategy<>(clazz);
-        }
-
-        // Jeśli nie używamy RFC4180MappingStrategy, sprawdź inne strategie
-        if (hasCsvBindByNameFields(clazz)) {
-            // Użyj strategii opartej na nagłówku, jeśli klasa ma pola z adnotacją @CsvBindByName
+        } else if (hasCsvBindByNameFields(clazz)) {
             HeaderColumnNameMappingStrategy<T> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
             mappingStrategy.setType(clazz);
             return mappingStrategy;
         } else {
-            // Użyj strategii opartej na kolejności, jeśli brak pól z adnotacją @CsvBindByName
             ColumnPositionMappingStrategy<T> mappingStrategy = new ColumnPositionMappingStrategy<>();
             mappingStrategy.setType(clazz);
             return mappingStrategy;
         }
     }
 
-    private <T> boolean shouldUseRFC4180MappingStrategy(File file) {
+    private boolean shouldUseRFC4180MappingStrategy(File file) {
         try (FileReader fileReader = new FileReader(file)) {
             char separator = detectSeparator(fileReader);
             boolean containsQuotes = detectQuotes(fileReader);
             return separator == ',' && containsQuotes;
         } catch (IOException e) {
             e.printStackTrace();
-            return false; // Domyślnie nie używaj RFC4180MappingStrategy w przypadku błędu
+            return false;
         }
     }
 
     private char detectSeparator(FileReader fileReader) throws IOException {
         char separator = ',';
-        String firstLine = new CSVReaderBuilder(fileReader).readNext()[0]; // Odczytaj pierwszą linię
+        String firstLine = new CSVReaderBuilder(fileReader).readNext()[0];
         if (Pattern.compile("\\t").matcher(firstLine).find()) {
-            separator = '\t'; // Jeśli w pierwszej linii znajduje się tabulator, ustaw separator na tabulator
+            separator = '\t';
         }
         return separator;
     }
