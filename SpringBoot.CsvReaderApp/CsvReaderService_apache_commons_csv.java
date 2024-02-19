@@ -35,7 +35,7 @@ public class CsvReaderService {
 
                 for (CSVRecord csvRecord : csvParser) {
                     int recordNumber = csvRecord.getRecordNumber();
-                    if (skipRecords == null || !skipRecords.contains(recordNumber)) {
+                    if (skipRecords == null || skipRecords.isEmpty() || !skipRecords.contains(recordNumber)) {
                         T myObject = parseCsvRecord(csvRecord, clazz, headerNames);
                         parsedData.add(myObject);
                     }
