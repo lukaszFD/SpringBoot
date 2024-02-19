@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CsvReaderService {
 
@@ -24,14 +25,17 @@ public class CsvReaderService {
 
             CSVFormat csvFormat = CSVFormat.DEFAULT;
 
-            if (skipRowsBeforeHeader != null && skipRowsBeforeHeader > 0) {
-                csvFormat = csvFormat.withSkipLines(skipRowsBeforeHeader);
-            }
-
-            csvFormat = csvFormat.withHeader();
-
             try (CSVParser csvParser = csvFormat.parse(isr)) {
-                List<String> headerNames = csvParser.getHeaderNames();
+
+                // Pomijanie wierszy przed nagłówkiem
+                if (skipRowsBeforeHeader != null && skipRowsBeforeHeader > 0) {
+                    for (int i = 0; i < skipRowsBeforeHeader; i++) {
+                        csvParser.iterator().next();
+                    }
+                }
+
+                Map<String, Integer> headerMap = csvParser.getHeaderMap();
+                List<String> headerNames = new ArrayList<>(headerMap.keySet());
 
                 for (CSVRecord csvRecord : csvParser) {
                     int recordNumber = csvRecord.getRecordNumber();
