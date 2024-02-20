@@ -1,27 +1,29 @@
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.annotations.CsvBindByName;
-import org.apache.commons.csv.annotations.CsvBindByPosition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class CsvReaderService {
+
+    @Autowired
+    private Charset charset;
 
     public <T> List<T> readCsvFile(File file, Class<T> clazz, Integer skipRowsBeforeHeader, List<Integer> skipRecords) {
         List<T> parsedData = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(file);
-             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_16LE)) {
+             InputStreamReader isr = new InputStreamReader(fis, charset)) {
 
             CSVFormat csvFormat = CSVFormat.DEFAULT;
 
@@ -34,8 +36,7 @@ public class CsvReaderService {
                     }
                 }
 
-                Map<String, Integer> headerMap = csvParser.getHeaderMap();
-                List<String> headerNames = new ArrayList<>(headerMap.keySet());
+                List<String> headerNames = getHeaderNames(csvParser);
 
                 for (CSVRecord csvRecord : csvParser) {
                     int recordNumber = csvRecord.getRecordNumber();
@@ -51,6 +52,11 @@ public class CsvReaderService {
         }
 
         return parsedData;
+    }
+
+    private List<String> getHeaderNames(CSVParser csvParser) {
+        Map<String, Integer> headerMap = csvParser.getHeaderMap();
+        return (headerMap != null) ? new ArrayList<>(headerMap.keySet()) : new ArrayList<>();
     }
 
     private <T> T parseCsvRecord(CSVRecord csvRecord, Class<T> clazz, List<String> headerNames) {
