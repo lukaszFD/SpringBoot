@@ -6,6 +6,23 @@
 <body>
     <h1 th:style="${style}">Witaj, [[${name}]]!</h1>
     <p th:text="${content}" th:style="${contentStyle}"></p>
+
+    <!-- Tabela z danymi z listy SummaryEntity -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Wartość</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="summaryEntity : ${summaryEntities}">
+                <td th:text="${summaryEntity.name}"></td>
+                <td th:text="${summaryEntity.value}"></td>
+            </tr>
+        </tbody>
+    </table>
+
     <p><strong>Życzę udanego dnia!</strong></p>
 </body>
 </html>

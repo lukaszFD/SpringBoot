@@ -12,6 +12,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Scanner;
 
 @Service
@@ -26,7 +27,7 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendStyledHtmlEmail(String to, String subject, String name, String content, String contentStyle) throws MessagingException, IOException {
+    public void sendSummaryEntitiesEmail(String to, String subject, String name, List<SummaryEntity> summaryEntities) throws MessagingException, IOException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -40,9 +41,10 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("name", name);
         context.setVariable("title", subject);
-        context.setVariable("content", content);
-        context.setVariable("contentStyle", contentStyle);
-        context.setVariable("style", "color: " + (contentStyle.equals("red") ? "red" : "green") + ";"); // Styl dla nagłówka h1
+        context.setVariable("content", "Dane z listy SummaryEntity:");
+        context.setVariable("contentStyle", "blue"); // Przykładowy styl treści
+        context.setVariable("style", "color: green;"); // Przykładowy styl dla nagłówka h1
+        context.setVariable("summaryEntities", summaryEntities);
         String processedHtmlBody = templateEngine.process(htmlBody, context);
 
         // Ustaw treść HTML wiadomości
