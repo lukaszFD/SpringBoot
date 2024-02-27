@@ -1,19 +1,26 @@
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 @RequestMapping("/email")
 public class EmailController {
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
 
-    @PostMapping("/send")
-    public String sendEmail() {
-        // Wywołaj metodę sendEmail z odpowiednimi danymi
-        emailService.sendEmail("recipient@example.com", "Temat e-maila", "Treść e-maila");
-        return "E-mail wysłany pomyślnie!";
+    @Autowired
+    public EmailController(EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    @PostMapping("/send-styled")
+    public String sendStyledHtmlEmail(@RequestParam String recipient, @RequestParam String subject, @RequestParam String name) {
+        try {
+            // Wersja z czerwonym podkreśleniem
+            emailService.sendStyledHtmlEmail(recipient, subject, name, "To jest treść HTML z czerwonym podkreśleniem.", "red");
+
+            // Wersja z zielonym podkreśleniem
+            emailService.sendStyledHtmlEmail(recipient, subject, name, "To jest treść HTML z zielonym podkreśleniem.", "green");
+
+            return "E-maile wysłane pomyślnie!";
+        } catch (Exception e) {
+            return "Błąd podczas wysyłania e-maila: " + e.getMessage();
+        }
     }
 }
