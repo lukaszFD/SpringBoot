@@ -1,5 +1,6 @@
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -9,20 +10,19 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 
 @Service
-public class EmailService {
+public class EmailSender {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
     @Autowired
-    public EmailService(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
+    public EmailSender(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(EmailTemplateType templateType) throws MessagingException, IOException {
+    public void sendEmail(EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
         Constants constants = getConstantsForTemplateType(templateType);
-        EmailContext emailContext = new EmailContext();
         emailContext.setVariables(constants);
 
         String processedHtmlBody = templateEngine.process(templateType.getTemplateName(), emailContext.getContext());
