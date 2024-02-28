@@ -8,7 +8,9 @@
         /* You can use Thymeleaf expressions in the style tag as well */
         body {
             background-color: #f2f2f2;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         .header {
@@ -23,9 +25,38 @@
             border-radius: 5px;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
         /* Add more styles as needed */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
     </style>
 </head>
 <body>
@@ -43,7 +74,7 @@
                 <th>Last Load Date</th>
                 <th>Last Table Count</th>
             </tr>
-            <tr th:each="entity : ${summaryEntities}">
+            <tr th:each="entity, row : ${summaryEntities}" th:class="${row.odd}? 'odd' : 'even'">
                 <td th:text="${entity.tableName}"></td>
                 <td th:text="${entity.lastLoadDate}"></td>
                 <td th:text="${entity.lastTblCnt}"></td>
