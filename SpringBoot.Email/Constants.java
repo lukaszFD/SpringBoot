@@ -1,6 +1,8 @@
 import java.util.Map;
 
 public interface Constants {
+    String RECIPIENT = "recipient";
+    String SUBJECT = "subject";
     String NAME = "name";
     String TITLE = "title";
     String CONTENT = "content";
