@@ -6,9 +6,10 @@ public class EmailConstantsSuccess implements Constants {
     @Override
     public Map<String, String> getAll() {
         Map<String, String> constants = new HashMap<>();
-        constants.put(TITLE_SUCCESS, "Tytuł sukcesu");
-        constants.put(SOME_OTHER_SUCCESS_VARIABLE, "Inna zmienna sukcesu");
+        constants.put(RECIPIENT, "recipient@example.com");
+        constants.put(SUBJECT, "Temat e-maila");
         constants.put(NAME, "Imię");
+        constants.put(TITLE, "Tytuł sukcesu");
         constants.put(CONTENT, "Dane z listy SummaryEntity:");
         constants.put(CONTENT_STYLE, "blue");
         constants.put(STYLE, "color: green;");

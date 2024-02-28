@@ -18,20 +18,20 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(String to, String subject, EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
+    public void sendEmail(EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
         Constants constants = getConstantsForTemplateType(templateType);
         emailContext.setVariables(constants);
 
         String processedHtmlBody = templateEngine.process(templateType.getTemplateName(), emailContext.getContext());
-        javaMailSender.send(createMimeMessage(to, subject, processedHtmlBody));
+        javaMailSender.send(createMimeMessage(processedHtmlBody));
     }
 
-    private MimeMessage createMimeMessage(String to, String subject, String htmlBody) throws MessagingException {
+    private MimeMessage createMimeMessage(String htmlBody) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        helper.setTo(to);
-        helper.setSubject(subject);
+        helper.setTo(emailContext.getVariable(Constants.RECIPIENT).toString());
+        helper.setSubject(emailContext.getVariable(Constants.SUBJECT).toString());
         helper.setText(htmlBody, true);
 
         return mimeMessage;

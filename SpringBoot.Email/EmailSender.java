@@ -1,18 +1,26 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.util.List;
+
+@Service
 public class EmailSender {
 
     @Autowired
     private EmailService emailService;
 
-    public void sendSuccessEmail(String recipient, String subject, List<SummaryEntity> summaryEntities) throws MessagingException, IOException {
+    public void sendSuccessEmail(List<SummaryEntity> summaryEntities) throws MessagingException, IOException {
         EmailContext emailContext = new EmailContext();
         EmailTemplateType templateType = EmailTemplateType.SUCCESS;
 
-        emailContext.setVariable(Constants.NAME, "Jan Kowalski");
-        emailContext.setVariable(Constants.CONTENT_STYLE, "red"); // Przykładowa zmiana stylu treści
-        emailContext.setVariable(Constants.SUMMARY_ENTITIES, summaryEntities);
-		
-        EmailTemplate emailTemplate = new EmailTemplate(templateType.getTemplateName());
+        emailContext.setVariables(templateType);
 
-        emailService.sendEmail(recipient, subject, emailContext, emailTemplate);
+        emailContext.setVariable(Constants.NAME, "Jan Kowalski");
+        emailContext.setVariable(Constants.CONTENT_STYLE, "red"); 
+        emailContext.setVariable(Constants.SUMMARY_ENTITIES, summaryEntities);
+
+        emailService.sendEmail(emailContext, templateType);
     }
 }
