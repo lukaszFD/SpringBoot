@@ -1,19 +1,10 @@
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Scanner;
 
 @Service
 public class EmailService {
@@ -27,43 +18,31 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendSummaryEntitiesEmail(String to, String subject, String name, List<SummaryEntity> summaryEntities) throws MessagingException, IOException {
+    public void sendEmail(String to, String subject, EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
+        Constants constants = getConstantsForTemplateType(templateType);
+        emailContext.setVariables(constants);
+
+        String processedHtmlBody = templateEngine.process(templateType.getTemplateName(), emailContext.getContext());
+        javaMailSender.send(createMimeMessage(to, subject, processedHtmlBody));
+    }
+
+    private MimeMessage createMimeMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
         helper.setTo(to);
         helper.setSubject(subject);
+        helper.setText(htmlBody, true);
 
-        // Odczytaj zawartość pliku HTML
-        String htmlBody = readHtmlFile("email-template.html");
-
-        // Ustaw dynamiczne dane w treści HTML
-        Context context = new Context();
-        context.setVariable("name", name);
-        context.setVariable("title", subject);
-        context.setVariable("content", "Dane z listy SummaryEntity:");
-        context.setVariable("contentStyle", "blue"); // Przykładowy styl treści
-        context.setVariable("style", "color: green;"); // Przykładowy styl dla nagłówka h1
-        context.setVariable("summaryEntities", summaryEntities);
-        String processedHtmlBody = templateEngine.process(htmlBody, context);
-
-        // Ustaw treść HTML wiadomości
-        helper.setText(processedHtmlBody, true);
-
-        javaMailSender.send(mimeMessage);
+        return mimeMessage;
     }
 
-    private String readHtmlFile(String filename) throws IOException {
-        ClassPathResource resource = new ClassPathResource(filename);
-        InputStreamSource source = new InputStreamSource() {
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return resource.getInputStream();
-            }
-        };
-        try (InputStream inputStream = source.getInputStream()) {
-            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
-            return scanner.hasNext() ? scanner.next() : "";
+    private Constants getConstantsForTemplateType(EmailTemplateType templateType) {
+        switch (templateType) {
+            case SUCCESS:
+                return new EmailConstantsSuccess();
+            default:
+                throw new IllegalArgumentException("Nieobsługiwany typ szablonu e-maila: " + templateType);
         }
     }
 }
