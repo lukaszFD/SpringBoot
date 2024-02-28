@@ -4,8 +4,8 @@ import java.util.Map;
 public class EmailConstantsSuccess implements Constants {
 
     @Override
-    public Map<String, String> getAll() {
-        Map<String, String> constants = new HashMap<>();
+    public Map<String, Object> getVariables() {
+        Map<String, Object> constants = new HashMap<>();
         constants.put(RECIPIENT, "recipient@example.com");
         constants.put(SUBJECT, "Temat e-maila");
         constants.put(NAME, "Imię");

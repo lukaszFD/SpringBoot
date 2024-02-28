@@ -10,5 +10,5 @@ public interface Constants {
     String STYLE = "style";
     String SUMMARY_ENTITIES = "summaryEntities";
 
-    Map<String, String> getAll();
+    Map<String, Object> getVariables();
 }

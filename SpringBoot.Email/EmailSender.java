@@ -15,10 +15,9 @@ public class EmailSender {
         EmailContext emailContext = new EmailContext();
         EmailTemplateType templateType = EmailTemplateType.SUCCESS;
 
-        emailContext.setVariables(templateType);
-
-        emailContext.setVariable(Constants.NAME, "Jan Kowalski");
-        emailContext.setVariable(Constants.CONTENT_STYLE, "red"); 
+		Constans constans = new EmailConstantsSuccess();
+		emailContext.setVariables(constans);
+ 
         emailContext.setVariable(Constants.SUMMARY_ENTITIES, summaryEntities);
 
         emailService.sendEmail(emailContext, templateType);

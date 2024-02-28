@@ -1,28 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${title}">Temat E-maila</title>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="${subject}"></title>
+    <style th:inline="text">
+        /* You can use Thymeleaf expressions in the style tag as well */
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add more styles as needed */
+    </style>
 </head>
 <body>
-    <h1 th:style="${style}">Witaj, [[${name}]]!</h1>
-    <p th:text="${content}" th:style="${contentStyle}"></p>
+    <div class="header">
+        <h1 th:text="${title}"></h1>
+    </div>
 
-    <!-- Tabela z danymi z listy SummaryEntity -->
-    <table border="1">
-        <thead>
+    <div class="content" th:style="${contentStyle}">
+        <p th:text="${content}"></p>
+
+        <!-- Iterate over the summary entities and display them -->
+        <table>
             <tr>
-                <th>Nazwa</th>
-                <th>Wartość</th>
+                <th>Table Name</th>
+                <th>Last Load Date</th>
+                <th>Last Table Count</th>
             </tr>
-        </thead>
-        <tbody>
-            <tr th:each="summaryEntity : ${summaryEntities}">
-                <td th:text="${summaryEntity.name}"></td>
-                <td th:text="${summaryEntity.value}"></td>
+            <tr th:each="entity : ${summaryEntities}">
+                <td th:text="${entity.tableName}"></td>
+                <td th:text="${entity.lastLoadDate}"></td>
+                <td th:text="${entity.lastTblCnt}"></td>
             </tr>
-        </tbody>
-    </table>
-
-    <p><strong>Życzę udanego dnia!</strong></p>
+        </table>
+    </div>
 </body>
 </html>
