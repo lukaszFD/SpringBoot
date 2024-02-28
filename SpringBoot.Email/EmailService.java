@@ -2,8 +2,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 
 @Service
@@ -18,20 +20,21 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
+    public void sendEmail(EmailTemplateType templateType) throws MessagingException, IOException {
         Constants constants = getConstantsForTemplateType(templateType);
+        EmailContext emailContext = new EmailContext();
         emailContext.setVariables(constants);
 
         String processedHtmlBody = templateEngine.process(templateType.getTemplateName(), emailContext.getContext());
-        javaMailSender.send(createMimeMessage(processedHtmlBody));
+        javaMailSender.send(createMimeMessage(processedHtmlBody, emailContext));
     }
 
-    private MimeMessage createMimeMessage(String htmlBody) throws MessagingException {
+    private MimeMessage createMimeMessage(String htmlBody, EmailContext emailContext) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        helper.setTo(emailContext.getVariable(Constants.RECIPIENT).toString());
-        helper.setSubject(emailContext.getVariable(Constants.SUBJECT).toString());
+        helper.setTo(emailContext.getContext().getVariable(Constants.RECIPIENT).toString());
+        helper.setSubject(emailContext.getContext().getVariable(Constants.SUBJECT).toString());
         helper.setText(htmlBody, true);
 
         return mimeMessage;
