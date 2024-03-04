@@ -11,15 +11,10 @@ import java.io.IOException;
 
 @Service
 public class EmailSender {
-
-    private final JavaMailSender javaMailSender;
-    private final TemplateEngine templateEngine;
-
-    @Autowired
-    public EmailSender(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
-        this.javaMailSender = javaMailSender;
-        this.templateEngine = templateEngine;
-    }
+	@Autowired
+    private JavaMailSender javaMailSender;
+	@Autowired
+    private TemplateEngine templateEngine;
 
     public void sendEmail(EmailContext emailContext, EmailTemplateType templateType) throws MessagingException, IOException {
         Constants constants = getConstantsForTemplateType(templateType);

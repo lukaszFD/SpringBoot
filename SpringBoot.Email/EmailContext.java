@@ -17,7 +17,7 @@ public class EmailContext {
     }
 
     public void setVariables(Constants constants) {
-        context.setVariables(constants.getAll());
+        context.setVariables(constants.getVariables());
     }
 
     public void setVariables(EmailTemplateType templateType) {
