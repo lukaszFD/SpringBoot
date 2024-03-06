@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,16 +27,26 @@ public class EmailSenderTest {
     @InjectMocks
     private EmailSender emailSender;
 
+    private SummaryEntity summaryEntity;
+
+    @Before
+    public void setUp() {
+        // Inicjalizacja obiektu SummaryEntity
+        summaryEntity = new SummaryEntity(/* uzupełnij dane */);
+    }
+
     @Test
     public void sendSuccessEmail_Success() throws MessagingException, IOException {
         // Arrange
         EmailContext emailContext = new EmailContext();
+
+        // Ustawienie templateType na SUCCESS
         EmailTemplateType templateType = EmailTemplateType.SUCCESS;
 
         Constants constants = new EmailConstantsSuccess();
         emailContext.setVariables(constants);
 
-        List<SummaryEntity> summaryEntities = Arrays.asList(new SummaryEntity(/*...*/)); // Uzupełnij danymi
+        List<SummaryEntity> summaryEntities = Arrays.asList(summaryEntity);
 
         when(etl.findByStatus(0)).thenReturn(summaryEntities);
 
@@ -43,7 +54,8 @@ public class EmailSenderTest {
         emailSender.sendSuccessEmail();
 
         // Assert
-        verify(emailService).sendEmail(any(EmailContext.class), any(EmailTemplateType.class));
+        // Upewnij się, że sendEmail zostało wywołane z odpowiednimi parametrami
+        verify(emailService).sendEmail(emailContext, templateType);
     }
 
     // Dodaj inne testy jednostkowe w razie potrzeby.
