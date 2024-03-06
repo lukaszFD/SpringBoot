@@ -10,13 +10,18 @@ public class EmailSender {
 
     @Autowired
     private EmailService emailService;
+	
+	@Autowired
+	private Etl etl;
 
-    public void sendSuccessEmail(List<SummaryEntity> summaryEntities) throws MessagingException, IOException {
+    public void sendSuccessEmail() throws MessagingException, IOException {
         EmailContext emailContext = new EmailContext();
         EmailTemplateType templateType = EmailTemplateType.SUCCESS;
 
 		Constans constans = new EmailConstantsSuccess();
 		emailContext.setVariables(constans);
+		
+		List<SummaryEntity> summaryEntities = etl.findByStatus(0);
  
         emailContext.setVariable(Constants.SUMMARY_ENTITIES, summaryEntities);
 
