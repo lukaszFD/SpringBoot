@@ -7,16 +7,16 @@ public class Unzipper {
         String zipFilePath = "ścieżka/do/twojego/pliku.zip";
 
         try {
-            unzip(zipFilePath);
-            System.out.println("Unzip completed successfully.");
+            File unpackedFile = unzip(new File(zipFilePath));
+            System.out.println("Unzip completed successfully. Unpacked file: " + unpackedFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void unzip(String zipFilePath) throws IOException {
-        File zipFile = new File(zipFilePath);
+    public static File unzip(File zipFile) throws IOException {
         String destDir = zipFile.getParent();
+        File unpackedFile = null;
 
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
             ZipEntry entry;
@@ -24,6 +24,7 @@ public class Unzipper {
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 String entryName = entry.getName();
                 String filePath = destDir + File.separator + entryName;
+                unpackedFile = new File(filePath);
 
                 if (entry.isDirectory()) {
                     // Tworzenie katalogu, jeśli jest to katalog
@@ -42,5 +43,7 @@ public class Unzipper {
                 zipInputStream.closeEntry();
             }
         }
+
+        return unpackedFile;
     }
 }
