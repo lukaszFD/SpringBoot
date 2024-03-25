@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Tabela podsumowania</title>
+    <style th:inline="text">
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .error-row {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Tabela podsumowania</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa tabeli</th>
+                    <th>Data ostatniego załadowania</th>
+                    <th>Ostatnia liczba rekordów</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entity, row : ${summaryEntities}">
+                    <td th:text="${entity.tableName}"></td>
+                    <td th:text="${entity.lastLoadDate}"></td>
+                    <td th:text="${entity.lastTblCnt}"></td>
+
+                    <td th:if="${entity.status == 0 && entity.required == 1}">
+                        <span style="color: red;">Uwaga: Wpis wymagający uwagi!</span>
+                    </td>
+
+                    <td th:if="${!(entity.status == 0 && entity.required == 1)}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:inline="javascript">
+        const rows = document.querySelectorAll('tr[th:each]');
+        for (const row of rows) {
+            const entity = row.dataset.entity;
+            const required = row.dataset.required;
+            row.dataset.error = entity.status === 0 && required === 1;
+        }
+    </script>
+</body>
+</html>
