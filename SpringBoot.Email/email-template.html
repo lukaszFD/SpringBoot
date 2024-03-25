@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title th:text="${subject}"></title>
     <style th:inline="text">
-        /* You can use Thymeleaf expressions in the style tag as well */
+        /* Możesz również używać wyrażeń Thymeleaf w tagu stylu */
         body {
             background-color: #f2f2f2;
             font-family: 'Arial', sans-serif;
@@ -28,7 +28,12 @@
             margin-top: 20px;
         }
 
-        /* Add more styles as needed */
+        .highlight-row {
+            background-color: red;
+            color: white; /* Opcjonalnie, aby poprawić czytelność tekstu */
+        }
+
+        /* Dodaj więcej styl */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -73,11 +78,17 @@
                 <th>Table Name</th>
                 <th>Last Load Date</th>
                 <th>Last Table Count</th>
+                <th>Status</th>
+                <th>Required</th>
             </tr>
-            <tr th:each="entity, row : ${summaryEntities}" th:class="${row.odd}? 'odd' : 'even'">
+            <tr th:each="entity, row : ${summaryEntities}" 
+                th:class="${row.odd}? 'odd' : 'even'"
+                th:classappend="${entity.status == 0 && entity.required == 1}? 'highlight-row'">
                 <td th:text="${entity.tableName}"></td>
                 <td th:text="${entity.lastLoadDate}"></td>
                 <td th:text="${entity.lastTblCnt}"></td>
+                <td th:text="${entity.status}"></td>
+                <td th:text="${entity.required}"></td>
             </tr>
         </table>
     </div>
