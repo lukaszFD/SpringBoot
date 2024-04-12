@@ -1,0 +1,38 @@
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.core.io.support.YamlPropertiesSourceFactory;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class YamlPropertySourceFactory extends YamlPropertiesSourceFactory {
+    @Override
+    public Properties loadProperties(Resource resource) throws IOException {
+        YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+        factory.setResources(new ClassPathResource("feed-config.yml")); // Tutaj podaj nazwę pliku YAML
+        return factory.getObject();
+    }
+}
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@ConfigurationProperties(prefix = "application")
+@PropertySource(value = "classpath:feed-config.yml", factory = YamlPropertySourceFactory.class)
+public class FeedConfigurationProperties {
+    private List<FeedConfiguration> feedConfiguration;
+
+    public List<FeedConfiguration> getFeedConfiguration() {
+        return feedConfiguration;
+    }
+
+    public void setFeedConfiguration(List<FeedConfiguration> feedConfiguration) {
+        this.feedConfiguration = feedConfiguration;
+    }
+
+    // Możesz również stworzyć odpowiednie klasy Java do reprezentacji poszczególnych sekcji konfiguracji.
+    // Na przykład klasę FeedConfiguration, SharedFolder, Database, FeedFile itp.
+}
