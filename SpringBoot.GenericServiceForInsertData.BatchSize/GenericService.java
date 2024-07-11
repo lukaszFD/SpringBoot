@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 public class GenericService<T> {
@@ -34,25 +35,35 @@ public class GenericService<T> {
         int threads = Runtime.getRuntime().availableProcessors();
 
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        List<Future<?>> futures = new ArrayList<>();
 
         for (int i = 0; i < entities.size(); i += batchSize) {
             int endIndex = Math.min(i + batchSize, entities.size());
 
             List<T> batch = entities.subList(i, endIndex);
 
-            executorService.submit(() -> {
+            Future<?> future = executorService.submit(() -> {
                 try {
                     saveBatch(batch, getTableName(), threads);
                 } catch (Exception e) {
                     // Obsługa wyjątku, logowanie błędu lub inne działania
                     e.printStackTrace();
+                    executorService.shutdownNow();
                 }
             });
+            futures.add(future);
         }
 
-        executorService.shutdown();
-        while (!executorService.isTerminated()) {
-            // Czekaj, aż wszystkie wątki zakończą pracę
+        // Sprawdzanie czy któryś z wątków zakończył się niepowodzeniem
+        for (Future<?> future : futures) {
+            try {
+                future.get(); // Blokuje do zakończenia taska, lub wyrzuca ExecutionException
+            } catch (Exception e) {
+                // Jeśli jest wyjątek, natychmiast zatrzymaj ExecutorService
+                executorService.shutdownNow();
+                e.printStackTrace();
+                break;
+            }
         }
 
         Instant end = Instant.now();
@@ -72,6 +83,7 @@ public class GenericService<T> {
             } catch (Exception e) {
                 // Obsługa wyjątku, logowanie błędu lub inne działania
                 e.printStackTrace();
+                throw e; // Rzucenie wyjątku aby go obsłużyć w wątku nadrzędnym
             }
         }
     }
