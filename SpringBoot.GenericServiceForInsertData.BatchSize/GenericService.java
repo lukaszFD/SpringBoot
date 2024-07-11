@@ -41,7 +41,12 @@ public class GenericService<T> {
             List<T> batch = entities.subList(i, endIndex);
 
             executorService.submit(() -> {
-                saveBatch(batch, getTableName(), threads);
+                try {
+                    saveBatch(batch, getTableName(), threads);
+                } catch (Exception e) {
+                    // Obsługa wyjątku, logowanie błędu lub inne działania
+                    e.printStackTrace();
+                }
             });
         }
 
@@ -62,7 +67,12 @@ public class GenericService<T> {
         // ...
 
         for (T entity : entities) {
-            repository.save(entity);
+            try {
+                repository.save(entity);
+            } catch (Exception e) {
+                // Obsługa wyjątku, logowanie błędu lub inne działania
+                e.printStackTrace();
+            }
         }
     }
 
