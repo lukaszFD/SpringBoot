@@ -1,39 +1,32 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class CsvPreprocessor {
 
-    public static InputStreamReader preprocessCsv(InputStreamReader inputStreamReader) throws IOException {
-        StringBuilder result = new StringBuilder();
-        
-        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Usuwanie samotnych CR i LF
-                line = line.replaceAll("\r(?!\n)", "").replaceAll("(?<!\r)\n", "");
-                result.append(line).append(System.lineSeparator());
-            }
-        }
+    public static InputStreamReader preprocessCsv(InputStreamReader input) throws IOException {
+        BufferedReader reader = new BufferedReader(input);
+        StringWriter stringWriter = new StringWriter();
+        BufferedWriter writer = new BufferedWriter(stringWriter);
 
-        // Konwersja przetworzonego tekstu na InputStreamReader
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result.toString().getBytes());
-        return new InputStreamReader(byteArrayInputStream);
+        String line;
+        while ((line = reader.readLine()) != null) {
+            writer.write(line.replaceAll("\r(?!\n)", "").replaceAll("(?<!\r)\n", ""));
+            writer.newLine();
+        }
+        
+        writer.flush();
+        return new InputStreamReader(new ByteArrayInputStream(stringWriter.toString().getBytes(StandardCharsets.UTF_8)));
     }
 
     public static void main(String[] args) throws IOException {
-        String filePath = "input.csv";
-        
-        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(filePath))) {
-            InputStreamReader processedReader = preprocessCsv(inputStreamReader);
+        String csvData = "Column1\rColumn2\nColumn3\r\nColumn4\rColumn5\nColumn6";
+        InputStreamReader inputStreamReader = new InputStreamReader(new ByteArrayInputStream(csvData.getBytes(StandardCharsets.UTF_8)));
+        InputStreamReader processedReader = preprocessCsv(inputStreamReader);
 
-            // Odczytywanie i zapisywanie przetworzonego pliku z powrotem do oryginalnego pliku
-            try (BufferedReader reader = new BufferedReader(processedReader);
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
+        BufferedReader finalReader = new BufferedReader(processedReader);
+        String processedLine;
+        while ((processedLine = finalReader.readLine()) != null) {
+            System.out.println(processedLine);
         }
     }
 }
