@@ -18,3 +18,14 @@ public class SomeService {
         externalClass.processData(threadLocalVariables);
     }
 }
+
+public class ExternalClass {
+
+    public void processData(ThreadLocalVariables threadLocalVariables) {
+        // Pobranie zmiennej z ThreadLocal
+        Object value = threadLocalVariables.get("exampleKey");
+
+        // Użycie zmiennej
+        System.out.println("Processed Value: " + value);
+    }
+}
