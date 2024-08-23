@@ -29,3 +29,26 @@ public class ExternalClass {
         System.out.println("Processed Value: " + value);
     }
 }
+
+@Service
+public class SomeService {
+
+    @Autowired
+    private ThreadLocalVariables threadLocalVariables;
+
+    public void someMethod() {
+        try {
+            // ustawienie zmiennej
+            threadLocalVariables.set("exampleKey", "exampleValue");
+
+            // pobranie zmiennej
+            Object value = threadLocalVariables.get("exampleKey");
+
+            // użycie zmiennej
+            System.out.println("Value: " + value);
+        } finally {
+            // wyczyszczenie zmiennych po zakończeniu operacji
+            threadLocalVariables.clear();
+        }
+    }
+}
