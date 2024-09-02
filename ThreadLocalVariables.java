@@ -38,20 +38,28 @@ public class ThreadLocalVariables {
 
     // Metoda zwracająca Integer
     public Integer getInteger(String key) {
-        Object value = threadLocalVariables.get().get(key);
-        if (value instanceof Integer) {
-            return (Integer) value;
+        try {
+            Object value = threadLocalVariables.get().get(key);
+            if (value instanceof Integer) {
+                return (Integer) value;
+            }
+            return null; // Lub rzuć wyjątek, jeśli nie jest Integer
+        } finally {
+            clear(); // Automatycznie czyści ThreadLocal po pobraniu wartości
         }
-        return null; // Lub rzuć wyjątek, jeśli nie jest Integer
     }
 
-    // Możesz dodawać inne metody zwracające różne typy
+    // Metoda zwracająca String
     public String getString(String key) {
-        Object value = threadLocalVariables.get().get(key);
-        if (value instanceof String) {
-            return (String) value;
+        try {
+            Object value = threadLocalVariables.get().get(key);
+            if (value instanceof String) {
+                return (String) value;
+            }
+            return null; // Lub rzuć wyjątek, jeśli nie jest String
+        } finally {
+            clear(); // Automatycznie czyści ThreadLocal po pobraniu wartości
         }
-        return null; // Lub rzuć wyjątek, jeśli nie jest String
     }
 
     public void set(String key, Object value) {
