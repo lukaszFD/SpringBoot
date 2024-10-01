@@ -109,3 +109,14 @@ private <T> T mapRowToClass(Row row, Class<T> clazz) {
         throw new RuntimeException(e);
     }
 }
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ExcelColumn {
+    int value();  // Numer kolumny w Excelu
+}
