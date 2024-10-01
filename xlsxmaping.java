@@ -120,3 +120,31 @@ import java.lang.annotation.Target;
 public @interface ExcelColumn {
     int value();  // Numer kolumny w Excelu
 }
+
+private <T> T mapRowToClass(Row row, Class<T> clazz) {
+    try {
+        T obj = clazz.getDeclaredConstructor().newInstance();
+        Field[] fields = clazz.getDeclaredFields();
+        
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(ExcelColumn.class)) {
+                field.setAccessible(true);
+
+                ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+                int columnIndex = excelColumn.value();
+
+                Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+
+                if (cell == null || cell.getCellType() == CellType.BLANK) {
+                    field.set(obj, null);
+                } else {
+                    field.set(obj, cell.toString());  // Wszystkie pola są typu String
+                }
+            }
+        }
+        
+        return obj;
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+    }
+}
