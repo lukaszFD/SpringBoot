@@ -31,3 +31,32 @@ private <T> T mapRowToClass(Row row, Class<T> clazz) {
         throw new RuntimeException(e);
     }
 }
+
+
+private <T> T mapRowToClass(Row row, Class<T> clazz) {
+    try {
+        T obj = clazz.getDeclaredConstructor().newInstance();
+        Field[] fields = clazz.getDeclaredFields();
+        
+        // Przechodzimy po komórkach w wierszu
+        for (Cell cell : row) {
+            int columnIndex = cell.getColumnIndex();  // Pobierz numer kolumny
+
+            // Sprawdzamy, czy numer kolumny nie przekracza liczby pól w klasie
+            if (columnIndex < fields.length) {
+                Field field = fields[columnIndex];
+                field.setAccessible(true);
+
+                if (cell == null || cell.getCellType() == CellType.BLANK) {
+                    field.set(obj, null);  // Ustaw null dla pustych komórek
+                } else {
+                    field.set(obj, cell.toString());  // Wszystkie pola są typu String
+                }
+            }
+        }
+        
+        return obj;
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+    }
+}
