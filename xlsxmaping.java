@@ -1,4 +1,4 @@
-private <T> T mapRowToClass(Row row, Class<T> clazz) {
+okprivate <T> T mapRowToClass(Row row, Class<T> clazz) {
     try {
         T obj = clazz.getDeclaredConstructor().newInstance();
         Field[] fields = clazz.getDeclaredFields();
@@ -55,6 +55,55 @@ private <T> T mapRowToClass(Row row, Class<T> clazz) {
             }
         }
         
+        return obj;
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+    }
+}
+
+private <T> T mapRowToClass(Row row, Class<T> clazz) {
+    try {
+        T obj = clazz.getDeclaredConstructor().newInstance();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Cell cell : row) {
+            int columnIndex = cell.getColumnIndex();  // Pobierz numer kolumny
+
+            if (columnIndex < fields.length) {
+                Field field = fields[columnIndex];
+                field.setAccessible(true);
+
+                // Sprawdzamy typ komórki i konwertujemy ją na String
+                String cellValue;
+                switch (cell.getCellType()) {
+                    case STRING:
+                        cellValue = cell.getStringCellValue();
+                        break;
+                    case NUMERIC:
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            cellValue = cell.getDateCellValue().toString();  // Konwersja daty na String
+                        } else {
+                            cellValue = Double.toString(cell.getNumericCellValue());  // Konwersja liczby na String
+                        }
+                        break;
+                    case BOOLEAN:
+                        cellValue = Boolean.toString(cell.getBooleanCellValue());
+                        break;
+                    case FORMULA:
+                        cellValue = cell.getCellFormula();  // Formuła jako String
+                        break;
+                    case BLANK:
+                        cellValue = null;  // Dla pustych komórek ustawiamy null
+                        break;
+                    default:
+                        cellValue = null;
+                }
+
+                // Przypisujemy skonwertowaną wartość do pola
+                field.set(obj, cellValue);
+            }
+        }
+
         return obj;
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         throw new RuntimeException(e);
