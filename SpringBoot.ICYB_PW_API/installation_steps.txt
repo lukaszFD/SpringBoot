@@ -1,0 +1,45 @@
+1. Go to the directory:
+
+	cd /etc/systemd/system/
+
+2. Create a new service file
+
+	sudo nano my-spring-api.service
+	
+3. Enter the following configuration into the file, adjusting the paths to your .jar application:
+
+	[Unit]
+	Description=Spring Boot API
+	After=network.target
+
+	[Service]
+	User=root 
+	ExecStart=/usr/bin/java -jar /media/sf_target/spring-boot-api-example-0.0.1-SNAPSHOT.jar
+	SuccessExitStatus=143
+	Restart=always
+	RestartSec=10
+	StandardOutput=journal
+	StandardError=journal
+
+	[Install]
+	WantedBy=multi-user.target
+	
+4. Reload systemd to register a new service.
+
+	sudo systemctl daemon-reload
+
+5. Enable the service to start automatically after a reboot.
+
+	sudo systemctl enable my-spring-api
+
+6. Start the service.
+
+	sudo systemctl start my-spring-api
+
+7. You can check the status of the service to make sure everything is working. 
+
+	sudo systemctl status my-spring-api
+
+8. Application logs.
+
+	journalctl -u my-spring-api -f

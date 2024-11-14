@@ -1,0 +1,54 @@
+<configuration>
+
+    <!-- Konfiguracja konsoli -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Wzorzec logowania do konsoli -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Konfiguracja pliku -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Plik logów -->
+        <file>logs/application.log</file>
+
+        <!-- RollingPolicy do tworzenia plików dzienników na podstawie daty -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Tworzenie nowego pliku co dzień -->
+            <fileNamePattern>logs/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Przechowuj logi przez 30 dni -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <!-- Wzorzec logowania do pliku -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logowanie na poziomie root (domyślne logi) -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- Dodatkowe logi na poziomie DEBUG dla twojego pakietu -->
+    <logger name="com.my.spring.boot.api" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- Logowanie dla Spring Security na poziomie INFO, aby wyłączyć wyjątki -->
+    <logger name="org.springframework.security" level="INFO" additivity="false">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- Logowanie dla Spring Web na poziomie INFO -->
+    <logger name="org.springframework.web" level="INFO" additivity="false">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>
