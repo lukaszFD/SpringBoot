@@ -1,3 +1,29 @@
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+
+public <T> void extractedData(Class<T> entityClass, JpaRepository<T, ?> repository) {
+    String rawFileName = entityClass.getAnnotation(Table.class).name();
+    String safeFileName = rawFileName.replaceAll("[^a-zA-Z0-9._-]", "_") // Usuwa niedozwolone znaki
+                                     + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) 
+                                     + ".csv";
+
+    Path safePath = Paths.get(localDir, safeFileName).normalize();
+
+    // Sprawdzamy, czy ścieżka nadal znajduje się w localDir
+    if (!safePath.startsWith(Paths.get(localDir))) {
+        throw new SecurityException("Attempted Path Traversal attack: " + safePath);
+    }
+
+    try (CSVWriter writer = new CSVWriter(new FileWriter(safePath.toFile()))) {
+        // Reszta logiki generowania CSV...
+    } catch (Exception e) {
+        log.error("Error while generating data for {} - {}", safeFileName, entityClass.getAnnotation(Table.class).name(), e);
+    }
+}
+
+
 package com.example.export;
 
 import com.example.entity.YourEntity;
