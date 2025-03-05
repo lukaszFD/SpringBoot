@@ -1,4 +1,57 @@
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class GenericExportService {
+
+    @Value("${application.local-dir}")
+    private String localDir;
+
+    public <T> void extractedData(Class<?> entityClass, JpaRepository<T, ?> repository) {
+        String fileName = entityClass.getAnnotation(Table.class).name() 
+                + "_" 
+                + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) 
+                + ".csv";
+        
+        // Sanityzacja nazwy pliku
+        String safeFileName = FilenameUtils.getName(fileName); // Usuwa ścieżki
+        safeFileName = safeFileName.replaceAll("[^a-zA-Z0-9._-]", "_"); // Zamienia niedozwolone znaki
+
+        try {
+            // Bezpieczne tworzenie ścieżki
+            Path baseDir = Paths.get(localDir).toAbsolutePath().normalize();
+            Path outputPath = baseDir.resolve(safeFileName).normalize();
+            
+            // Sprawdzenie czy ścieżka jest w dozwolonym katalogu
+            if (!outputPath.startsWith(baseDir)) {
+                throw new SecurityException("Attempted path traversal attack detected");
+            }
+
+            log.info("Generating report: {}", outputPath);
+            
+            try (CSVWriter writer = new CSVWriter(new FileWriter(outputPath.toFile()))) {
+                // Reszta logiki zapisu do pliku
+                Field[] fields = entityClass.getDeclaredFields();
+                List<T> entities = repository.findAll();
+                
+                // ... (pozostała część kodu)
+            }
+        } catch (SecurityException e) {
+            log.error("Security violation: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Error generating report: {}", e.getMessage());
+        }
+    }
+}
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
